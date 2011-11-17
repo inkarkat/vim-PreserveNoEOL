@@ -1,4 +1,17 @@
+" PreserveNoEOL/Internal.vim: Internal Vimscript-only implementation of Preserve
+" EOL. 
+"
+" DEPENDENCIES:
+"
+" Copyright: (C) 2011 Ingo Karkat
+"   The VIM LICENSE applies to this script; see ':help copyright'. 
+"
 " Source: http://vim.wikia.com/wiki/Preserve_missing_end-of-line_at_end_of_text_files
+
+" Maintainer:	Ingo Karkat <ingo@karkat.de>
+"
+" REVISION	DATE		REMARKS 
+"	001	18-Nov-2011	file creation
 
 " Preserve noeol (missing trailing eol) when saving file. In order
 " to do this we need to temporarily 'set binary' for the duration of
@@ -8,12 +21,6 @@
 
 " This works because 'eol' is set properly no matter what file format is used,
 " even if it is only used when 'binary' is set.
-
-augroup automatic_noeol
-au!
-
-au BufWritePre  * call TempSetBinaryForNoeol()
-au BufWritePost * call TempRestoreBinaryForNoeol()
 
 fun! TempSetBinaryForNoeol()
   let s:save_binary = &binary
@@ -53,4 +60,12 @@ fun! TempRestoreBinaryForNoeol()
   endif
 endfun
 
-augroup END
+function! PreserveNoEOL#Internal#Preserve( isPostWrite )
+  if a:isPostWrite
+    call TempRestoreBinaryForNoeol()
+  else
+    call TempSetBinaryForNoeol()
+  endif
+endfunction
+
+" vim: set ts=8 sts=2 sw=2 expandtab ff=unix fdm=syntax :
