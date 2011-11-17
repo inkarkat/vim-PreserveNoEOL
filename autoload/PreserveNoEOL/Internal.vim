@@ -8,19 +8,18 @@
 
 " This works because 'eol' is set properly no matter what file format is used,
 " even if it is only used when 'binary' is set.
- 
+
 augroup automatic_noeol
 au!
- 
+
 au BufWritePre  * call TempSetBinaryForNoeol()
 au BufWritePost * call TempRestoreBinaryForNoeol()
- 
+
 fun! TempSetBinaryForNoeol()
   let s:save_binary = &binary
   if ! &eol && ! &binary
     setlocal binary
     if &ff == "dos" || &ff == "mac"
-      "undojoin | silent 1,$-1s#$#\=nr2char(13)
       if line('$') > 1
         undojoin | exec "silent 1,$-1normal! A\<C-V>\<C-M>"
       endif
@@ -29,25 +28,29 @@ fun! TempSetBinaryForNoeol()
       undojoin | %join!
       " mac format does not use a \n anywhere, so we don't add one when writing
       " in binary (which uses unix format always). However, inside the outer
-      " "if" statement, we already know that 'noeol' is set, so no special logic
+      " if statement, we already know that 'noeol' is set, so no special logic
       " is needed.
     endif
   endif
 endfun
- 
+
 fun! TempRestoreBinaryForNoeol()
   if ! &eol && ! s:save_binary
     if &ff == "dos"
       if line('$') > 1
-        "undojoin | silent 1,$-1s/\r$//e
-        silent 1,$-1s/\r$//e
+        " Sometimes undojoin gives errors here, even when it shouldn't.
+        " Suppress them for now...if you can figure out and fix them instead,
+        " please update http://vim.wikia.com/wiki/VimTip1369
+        silent! undojoin | silent 1,$-1s/\r$//e
       endif
     elseif &ff == "mac"
-      "undojoin | %s/\r/\r/ge
-      %s/\r/\r/ge
+      " Sometimes undojoin gives errors here, even when it shouldn't.
+      " Suppress them for now...if you can figure out and fix them instead,
+      " please update http://vim.wikia.com/wiki/VimTip1369
+      silent! undojoin | silent %s/\r/\r/ge
     endif
     setlocal nobinary
   endif
 endfun
- 
+
 augroup END
