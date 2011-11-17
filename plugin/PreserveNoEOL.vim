@@ -11,6 +11,10 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"	003	18-Nov-2011	Switched interface of Preserve() to pass
+"				pre-/post-write flag instead of filespec. 
+"				Add BufWritePre hook to enable pure Vimscript
+"				implementation. 
 "	002	18-Nov-2011	Separated preserve information, (auto)command
 "				implementation functions and the strategy for
 "				the actual preserve action into dedicated
@@ -41,9 +45,11 @@ endif
 
 "- autocmds --------------------------------------------------------------------
 
+let s:isNoEOL = 0
 augroup PreserveNoEOL
     autocmd!
-    autocmd BufWritePost * if ! &l:eol && ! &l:binary | call PreserveNoEOL#HandleNoEOL() | endif
+    autocmd BufWritePre  * let s:isNoEOL = (! &l:eol && ! &l:binary) | if s:isNoEOL | call PreserveNoEOL#HandleNoEOL(0) | endif
+    autocmd BufWritePost *                                             if s:isNoEOL | call PreserveNoEOL#HandleNoEOL(1) | endif
 augroup END
 
 
