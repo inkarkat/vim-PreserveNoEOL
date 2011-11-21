@@ -25,6 +25,7 @@
 fun! TempSetBinaryForNoeol()
   let s:save_binary = &binary
   if ! &eol && ! &binary
+    let s:save_view = winsaveview()
     setlocal binary
     if &ff == "dos" || &ff == "mac"
       if line('$') > 1
@@ -57,6 +58,7 @@ fun! TempRestoreBinaryForNoeol()
       silent! undojoin | silent %s/\r/\r/ge
     endif
     setlocal nobinary
+    call winrestview(s:save_view)
   endif
 endfun
 
