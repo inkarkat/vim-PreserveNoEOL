@@ -11,6 +11,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"	004	18-Nov-2011	Moved default location of "noeol" executable to
+"				any 'runtimepath' directory. 
 "	003	18-Nov-2011	Switched interface of Preserve() to pass
 "				pre-/post-write flag instead of filespec. 
 "				Add BufWritePre hook to enable pure Vimscript
@@ -29,13 +31,27 @@ let g:loaded_PreserveNoEOL = 1
 
 "- configuration ---------------------------------------------------------------
 
-if ! exists('g:PreserveNoEOL_command')
+function! s:DefaultCommand()
+    let l:noeolCommandFilespec = get(split(globpath(&runtimepath, 'noeol'), "\n"), 0, '')
+
+    " Fall back to (hopefully) locating this somewhere on $PATH. 
+    let l:noeolCommandFilespec = (empty(l:noeolCommandFilespec) ? 'noeol' : l:noeolCommandFilespec)
+
+    let l:command = escapings#shellescape(l:noeolCommandFilespec)
+
     if has('win32') || has('win64')
-	let g:PreserveNoEOL_command = 'perl ' . escapings#shellescape($HOME . '/bin/noeol')
-    else
-	let g:PreserveNoEOL_command = 'noeol'
+	" Only Unix shells can directly execute the Perl script through the
+	" shebang line; Windows needs an explicit invocation through the Perl
+	" interpreter. 
+	let l:command = 'perl ' . l:command
     endif
+
+    return l:command
+endfunction
+if ! exists('g:PreserveNoEOL_command')
+    let g:PreserveNoEOL_command = s:DefaultCommand()
 endif
+delfunction s:DefaultCommand
 
 if ! exists('g:PreserveNoEOL_Function')
     let g:PreserveNoEOL_Function = (empty(g:PreserveNoEOL_command) ? function('PreserveNoEOL#internal#Preserve') : function('PreserveNoEOL#noeol#Preserve'))
