@@ -23,8 +23,11 @@ if 1 || ! exists('s:isPerlInitialized')
     {
 	eval
 	{
+	    my $perms;
 	    my $file = VIM::Eval('expand("<afile>")');
 	    if (! -w $file && VIM::Eval('v:cmdbang') == 1) {
+		my $mode = (stat($file))[2] or die "Can't stat: $!";
+		$perms = sprintf('%04o', $mode & 07777);
 		chmod 0777, $file or die "Can't remove read-only flag: $!";
 	    }
 	    open $fh, '+>>', $file or die "Can't open file: $!";
@@ -43,6 +46,12 @@ if 1 || ! exists('s:isPerlInitialized')
 	    } elsif(substr($buf, -1) eq "\r") {
 		# print "truncate Mac-style CR\n";
 		truncate $fh, $pos - 1 or die "Can't truncate: $!";
+	    }
+
+	    if ($perms != undef) {
+		VIM::DoCommand("echomsg 'resetting perms to $perms'");
+		VIM::DoCommand("autocmd CursorHold <buffer> perl chmod $perms, '$file' or die \"Can't restore read-only flag: \$!\"");
+		chmod $perms, $file or die "Can't restore read-only flag: $!";
 	    }
 	};
 	$@ =~ s/'/''/g;
