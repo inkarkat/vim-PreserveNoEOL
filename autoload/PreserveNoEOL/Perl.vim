@@ -23,25 +23,23 @@ if ! exists('s:isPerlInitialized')
     {
 	eval
 	{
-	    use autodie qw(open sysseek sysread truncate);
-
 	    my $file = VIM::Eval('expand("<afile>")');
-	    open my $fh, '+>>', $file;
+	    open my $fh, '+>>', $file or die "Can't open file: $!";
 	    my $pos = tell $fh;
 	    $pos > 0 or exit;
 	    my $len = ($pos >= 2 ? 2 : 1);
-	    sysseek $fh, $pos - $len, 0;
+	    sysseek $fh, $pos - $len, 0 or die "Can't seek to end: $!";
 	    sysread $fh, $buf, $len or die 'No data to read?';
 
 	    if ($buf eq "\r\n") {
 		# print "truncate DOS-style CR-LF\n";
-		truncate $fh, $pos - 2;
+		truncate $fh, $pos - 2 or die "Can't truncate: $!";
 	    } elsif(substr($buf, -1) eq "\n") {
 		# print "truncate Unix-style LF\n";
-		truncate $fh, $pos - 1;
+		truncate $fh, $pos - 1 or die "Can't truncate: $!";
 	    } elsif(substr($buf, -1) eq "\r") {
 		# print "truncate Mac-style CR\n";
-		truncate $fh, $pos - 1;
+		truncate $fh, $pos - 1 or die "Can't truncate: $!";
 	    }
 	};
 	$@ =~ s/'/''/g;
