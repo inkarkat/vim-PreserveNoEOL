@@ -17,6 +17,7 @@ endif
 
 if ! exists('s:isPerlInitialized')
     perl << EOF
+    package PreserveNoEOL;
 
     sub noeol
     {
@@ -55,7 +56,7 @@ function! PreserveNoEOL#Perl#Preserve( isPostWrite )
     endif
 
     let l:perl_errmsg = ''
-    perl noeol
+    perl PreserveNoEOL::noeol
     if ! empty(l:perl_errmsg)
 	let v:errmsg = "Failed to preserve 'noeol': " . l:perl_errmsg
 	echohl ErrorMsg
