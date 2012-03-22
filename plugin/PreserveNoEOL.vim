@@ -45,11 +45,21 @@ let g:loaded_PreserveNoEOL = 1
 "- configuration ---------------------------------------------------------------
 
 function! s:DefaultCommand()
-    let l:noeolCommandFilename = 'noeol' . (has('win32') || has('win64') ? '.cmd' : '')
-    let l:noeolCommandFilespec = get(split(globpath(&runtimepath, l:noeolCommandFilename), "\n"), 0, '')
+    let l:noeolCommandFilespec = get(split(globpath(&runtimepath, 'noeol'), "\n"), 0, '')
 
-    " Fall back to (hopefully) locating this somewhere on the PATH.
-    return escapings#shellescape(empty(l:noeolCommandFilespec) ? l:noeolCommandFilename : l:noeolCommandFilespec)
+    " Fall back to (hopefully) locating this somewhere on $PATH.
+    let l:noeolCommandFilespec = (empty(l:noeolCommandFilespec) ? 'noeol' : l:noeolCommandFilespec)
+
+    let l:command = escapings#shellescape(l:noeolCommandFilespec)
+
+    if has('win32') || has('win64')
+	" Only Unix shells can directly execute the Perl script through the
+	" shebang line; Windows needs an explicit invocation through the Perl
+	" interpreter.
+	let l:command = 'cmd /c call ' . l:command
+    endif
+
+    return l:command
 endfunction
 if ! exists('g:PreserveNoEOL_command')
     let g:PreserveNoEOL_command = s:DefaultCommand()
