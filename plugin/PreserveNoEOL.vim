@@ -11,10 +11,14 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	007	23-Mar-2012	Add embedded Perl implementation and favor that
+"				one if Vim is built with Perl support, since it
+"				avoids the shell invocation and doesn't directly
+"				mess with Vim's buffer contents.
 "	006	23-Mar-2012	Renamed noeol.vim autoload script to
 "				Executable.vim.
 "				Handle Windows executable invocation via
-"				"noeol.cmd" wrapper instead of appending the
+"				"noeol.cmd" wrapper instead of prepending the
 "				Perl interpreter call. This allows for more
 "				flexibility when the Perl interpreter is not
 "				found in the PATH.
@@ -41,14 +45,11 @@ let g:loaded_PreserveNoEOL = 1
 "- configuration ---------------------------------------------------------------
 
 function! s:DefaultCommand()
-    let l:noeolCommandFilespec = get(split(globpath(&runtimepath, 'noeol'), "\n"), 0, '')
+    let l:noeolCommandFilename = 'noeol' . (has('win32') || has('win64') ? '.cmd' : '')
+    let l:noeolCommandFilespec = get(split(globpath(&runtimepath, l:noeolCommandFilename), "\n"), 0, '')
 
     " Fall back to (hopefully) locating this somewhere on the PATH.
-    let l:noeolCommandFilespec = (empty(l:noeolCommandFilespec) ? 'noeol' : l:noeolCommandFilespec)
-
-    let l:command = escapings#shellescape(l:noeolCommandFilespec)
-
-    return l:command
+    return escapings#shellescape(empty(l:noeolCommandFilespec) ? l:noeolCommandFilename : l:noeolCommandFilespec)
 endfunction
 if ! exists('g:PreserveNoEOL_command')
     let g:PreserveNoEOL_command = s:DefaultCommand()
@@ -58,11 +59,18 @@ delfunction s:DefaultCommand
 if ! exists('g:PreserveNoEOL_Function')
     if v:version < 702
 	" Vim 7.0/1 need preloading of functions referenced in Funcrefs.
-	runtime autoload/PreserveNoEOL/Internal.vim
 	runtime autoload/PreserveNoEOL/Executable.vim
+	runtime autoload/PreserveNoEOL/Internal.vim
+	runtime autoload/PreserveNoEOL/Perl.vim
     endif
 
-    let g:PreserveNoEOL_Function = (empty(g:PreserveNoEOL_command) ? function('PreserveNoEOL#Internal#Preserve') : function('PreserveNoEOL#Executable#Preserve'))
+    if has('perl')
+	let g:PreserveNoEOL_Function = function('PreserveNoEOL#Perl#Preserve')
+    elseif empty(g:PreserveNoEOL_command)
+	let g:PreserveNoEOL_command = function('PreserveNoEOL#Internal#Preserve')
+    else
+	let g:PreserveNoEOL_Function = function('PreserveNoEOL#Executable#Preserve')
+    endif
 endif
 
 
