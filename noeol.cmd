@@ -1,1 +1,0 @@
-@call perl "%~dpn0" %*
