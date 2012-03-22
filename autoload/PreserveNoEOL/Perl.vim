@@ -23,8 +23,20 @@ if ! exists('s:isPerlInitialized')
     {
 	eval
 	{
+	    my $perms;
 	    my $file = VIM::Eval('expand("<afile>")');
-	    open my $fh, '+>>', $file or die "Can't open file: $!";
+	    unless (open my $fh, '+>>', $file)
+	    {
+		if (VIM::Eval('v:cmdbang') == 1)
+		{
+		    my $mode = (stat($file))[2] or die "Can't stat: $!";
+		    $perms = sprintf('%04o', $mode & 07777);
+		    chmod 0777, $file or die "Can't remove read-only flag: $!";
+		    open $fh, '+>>', $file or die "Can't open file: $!";
+		} else {
+		    die "Can't open file: $!";
+		}
+	    }
 	    my $pos = tell $fh;
 	    $pos > 0 or exit;
 	    my $len = ($pos >= 2 ? 2 : 1);
@@ -43,7 +55,7 @@ if ! exists('s:isPerlInitialized')
 	    }
 	};
 	$@ =~ s/'/''/g;
-	VIM::DoCommand("let l:perl_errmsg = '$@'");
+	VIM::DoCommand("let perl_errmsg = '$@'");
     }
 EOF
     let s:isPerlInitialized = 1
