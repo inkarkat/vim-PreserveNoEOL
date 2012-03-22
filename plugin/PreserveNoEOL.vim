@@ -5,12 +5,14 @@
 "   - PreserveNoEOL.vim autoload script. 
 "   - Preserve implementation like PreserveNoEOL/noeol.vim autoload script. 
 "
-" Copyright: (C) 2011 Ingo Karkat
+" Copyright: (C) 2011-2012 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"	005	02-Mar-2012	FIX: Vim 7.0/1 need preloading of functions
+"				referenced in Funcrefs. 
 "	004	18-Nov-2011	Moved default location of "noeol" executable to
 "				any 'runtimepath' directory. 
 "	003	18-Nov-2011	Switched interface of Preserve() to pass
@@ -54,7 +56,13 @@ endif
 delfunction s:DefaultCommand
 
 if ! exists('g:PreserveNoEOL_Function')
-    let g:PreserveNoEOL_Function = (empty(g:PreserveNoEOL_command) ? function('PreserveNoEOL#internal#Preserve') : function('PreserveNoEOL#noeol#Preserve'))
+    if v:version < 702
+	" Vim 7.0/1 need preloading of functions referenced in Funcrefs.
+	runtime autoload/PreserveNoEOL/Internal.vim
+	runtime autoload/PreserveNoEOL/noeol.vim
+    endif
+
+    let g:PreserveNoEOL_Function = (empty(g:PreserveNoEOL_command) ? function('PreserveNoEOL#Internal#Preserve') : function('PreserveNoEOL#noeol#Preserve'))
 endif
 
 
