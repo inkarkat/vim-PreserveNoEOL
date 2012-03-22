@@ -1,0 +1,6 @@
+autoload/PreserveNoEOL.vim
+autoload/PreserveNoEOL/Info.vim
+autoload/PreserveNoEOL/Internal.vim
+autoload/PreserveNoEOL/noeol.vim
+plugin/PreserveNoEOL.vim
+noeol
