@@ -15,7 +15,7 @@ if ! has('perl')
     finish
 endif
 
-if 1 || ! exists('s:isPerlInitialized')
+if ! exists('s:isPerlInitialized')
     perl << EOF
     package PreserveNoEOL;
 
@@ -25,11 +25,17 @@ if 1 || ! exists('s:isPerlInitialized')
 	{
 	    my $perms;
 	    my $file = VIM::Eval('expand("<afile>")');
+
 	    if (! -w $file && VIM::Eval('v:cmdbang') == 1) {
+		# Unlike Vim with :write!, Perl cannot open a read-only file for
+		# writing. Being invoked here means that Vim was able to
+		# successfully write the file itself, so we should be able to
+		# temporarily lift the read-only flag, too.
 		my $mode = (stat($file))[2] or die "Can't stat: $!";
 		$perms = sprintf('%04o', $mode & 07777);
 		chmod 0777, $file or die "Can't remove read-only flag: $!";
 	    }
+
 	    open $fh, '+>>', $file or die "Can't open file: $!";
 	    my $pos = tell $fh;
 	    $pos > 0 or exit;
@@ -47,11 +53,20 @@ if 1 || ! exists('s:isPerlInitialized')
 		# print "truncate Mac-style CR\n";
 		truncate $fh, $pos - 1 or die "Can't truncate: $!";
 	    }
+	    close $fh or die "Can't close file: $!";
 
 	    if ($perms != undef) {
-		VIM::DoCommand("echomsg 'resetting perms to $perms'");
-		VIM::DoCommand("autocmd CursorHold <buffer> perl chmod $perms, '$file' or die \"Can't restore read-only flag: \$!\"");
 		chmod $perms, $file or die "Can't restore read-only flag: $!";
+		my $mode2 = (stat($file))[2] or die "Can't stat: $!";
+		my $perms2 = sprintf('%04o', $mode2 & 07777);
+		if ($perms2 ne $perms) {
+		    # XXX: Somehow, on Strawberry Perl 5.12.3 on Windows Vista
+		    # and Vim 7.3/x86, the permissions won't change back, even
+		    # outside Vim. But somehow this can be worked around by
+		    # invoking another :perl?!
+		    #VIM::DoCommand("echomsg 'I need the read-only fix'");
+		    VIM::DoCommand("perl chmod $perms, '$file' or die \"Can't restore read-only flag: \$!\"");
+		}
 	    }
 	};
 	$@ =~ s/'/''/g;
