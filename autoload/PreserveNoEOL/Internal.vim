@@ -3,8 +3,10 @@
 "
 " DEPENDENCIES:
 "
-" Copyright: (C) 2011 Ingo Karkat
-"   The VIM LICENSE applies to this script; see ':help copyright'. 
+" Copyright: (C) 2011 Ingo Karkat and the authors of the Vim Tips Wiki page
+" "Preserve missing end-of-line at end of text files". 
+"   Creative Commons Attribution-Share Alike License 3.0 (Unported) (CC-BY-SA)
+"   http://creativecommons.org/licenses/by-sa/3.0/
 "
 " Source: http://vim.wikia.com/wiki/Preserve_missing_end-of-line_at_end_of_text_files
 
@@ -22,7 +24,7 @@
 " This works because 'eol' is set properly no matter what file format is used,
 " even if it is only used when 'binary' is set.
 
-fun! TempSetBinaryForNoeol()
+fun! s:TempSetBinaryForNoeol()
   let s:save_binary = &binary
   if ! &eol && ! &binary
     let s:save_view = winsaveview()
@@ -42,7 +44,7 @@ fun! TempSetBinaryForNoeol()
   endif
 endfun
 
-fun! TempRestoreBinaryForNoeol()
+fun! s:TempRestoreBinaryForNoeol()
   if ! &eol && ! s:save_binary
     if &ff == "dos"
       if line('$') > 1
@@ -64,9 +66,9 @@ endfun
 
 function! PreserveNoEOL#Internal#Preserve( isPostWrite )
   if a:isPostWrite
-    call TempRestoreBinaryForNoeol()
+    call s:TempRestoreBinaryForNoeol()
   else
-    call TempSetBinaryForNoeol()
+    call s:TempSetBinaryForNoeol()
   endif
 endfunction
 
