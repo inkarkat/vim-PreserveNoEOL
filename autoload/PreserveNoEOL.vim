@@ -1,26 +1,27 @@
-" PreserveNoEOL.vim: Preserve missing EOL at the end of text files. 
+" PreserveNoEOL.vim: Preserve missing EOL at the end of text files.
 "
 " DEPENDENCIES:
 "
-" Copyright: (C) 2011 Ingo Karkat
-"   The VIM LICENSE applies to this script; see ':help copyright'. 
+" Copyright: (C) 2011-2012 Ingo Karkat
+"   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
-" REVISION	DATE		REMARKS 
+" REVISION	DATE		REMARKS
+"	003	23-Mar-2012	Rename b:preservenoeol to b:PreserveNoEOL.
 "	002	18-Nov-2011	Switched interface of Preserve() to pass
-"				pre-/post-write flag instead of filespec. 
+"				pre-/post-write flag instead of filespec.
 "	001	18-Nov-2011	file creation
 
 function! PreserveNoEOL#HandleNoEOL( isPostWrite )
     if PreserveNoEOL#Info#IsPreserve()
-	" The user has chosen to preserve the missing EOL in the last line. 
+	" The user has chosen to preserve the missing EOL in the last line.
 	call call(g:PreserveNoEOL_Function, [a:isPostWrite])
     elseif a:isPostWrite
 	" The buffer write has appended the missing EOL in the last line. Vim
 	" does not reset 'noeol', but I prefer to have it reflect the actual
 	" file status, so that a custom 'statusline' can have a more meaningful
-	" status. 
+	" status.
 	setlocal eol
     endif
 endfunction
@@ -37,7 +38,7 @@ function! PreserveNoEOL#SetPreserve()
 	echomsg v:errmsg
 	echohl None
     else
-	let b:preservenoeol = 1
+	let b:PreserveNoEOL = 1
 	echomsg 'Missing EOL will be preserved'
     endif
 endfunction
