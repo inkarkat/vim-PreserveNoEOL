@@ -17,11 +17,6 @@
 "				mess with Vim's buffer contents.
 "	006	23-Mar-2012	Renamed noeol.vim autoload script to
 "				Executable.vim.
-"				Handle Windows executable invocation via
-"				"noeol.cmd" wrapper instead of prepending the
-"				Perl interpreter call. This allows for more
-"				flexibility when the Perl interpreter is not
-"				found in the PATH.
 "	005	02-Mar-2012	FIX: Vim 7.0/1 need preloading of functions
 "				referenced in Funcrefs.
 "	004	18-Nov-2011	Moved default location of "noeol" executable to
@@ -56,7 +51,7 @@ function! s:DefaultCommand()
 	" Only Unix shells can directly execute the Perl script through the
 	" shebang line; Windows needs an explicit invocation through the Perl
 	" interpreter.
-	let l:command = 'cmd /c call ' . l:command
+	let l:command = 'perl ' . l:command
     endif
 
     return l:command
