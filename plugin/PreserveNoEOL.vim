@@ -11,6 +11,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	008	25-Mar-2012	Add :SetNoEOL command.
 "	007	23-Mar-2012	Add embedded Perl implementation and favor that
 "				one if Vim is built with Perl support, since it
 "				avoids the shell invocation and doesn't directly
@@ -56,8 +57,8 @@ function! s:DefaultCommand()
 
     return l:command
 endfunction
-if ! exists('g:PreserveNoEOL_command')
-    let g:PreserveNoEOL_command = s:DefaultCommand()
+if ! exists('g:PreserveNoEOL_Command')
+    let g:PreserveNoEOL_Command = s:DefaultCommand()
 endif
 delfunction s:DefaultCommand
 
@@ -71,8 +72,8 @@ if ! exists('g:PreserveNoEOL_Function')
 
     if has('perl')
 	let g:PreserveNoEOL_Function = function('PreserveNoEOL#Perl#Preserve')
-    elseif empty(g:PreserveNoEOL_command)
-	let g:PreserveNoEOL_command = function('PreserveNoEOL#Internal#Preserve')
+    elseif empty(g:PreserveNoEOL_Command)
+	let g:PreserveNoEOL_Command = function('PreserveNoEOL#Internal#Preserve')
     else
 	let g:PreserveNoEOL_Function = function('PreserveNoEOL#Executable#Preserve')
     endif
@@ -92,6 +93,7 @@ augroup END
 
 "- commands --------------------------------------------------------------------
 
-command! -bar PreserveNoEOL call PreserveNoEOL#SetPreserve()
+command! -bar PreserveNoEOL call PreserveNoEOL#SetPreserve(0)
+command! -bar SetNoEOL      call PreserveNoEOL#SetPreserve(1)
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
