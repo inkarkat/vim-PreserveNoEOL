@@ -19,6 +19,10 @@ if ! exists('s:isPerlInitialized')
     perl << EOF
     package PreserveNoEOL;
 
+    # XXX: Use of autodie failed with "Can't call method "isa" on an undefined
+    # value at C:/ProgramData/Perl5.12/perl/lib/autodie/exception.pm line 672."
+    # instead of throwing an exception. Do explicit "or die()" checks instead.
+
     sub noeol
     {
 	eval
