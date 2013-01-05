@@ -1,6 +1,7 @@
 autoload/PreserveNoEOL.vim
+autoload/PreserveNoEOL/Executable.vim
 autoload/PreserveNoEOL/Info.vim
 autoload/PreserveNoEOL/Internal.vim
-autoload/PreserveNoEOL/noeol.vim
+autoload/PreserveNoEOL/Perl.vim
 plugin/PreserveNoEOL.vim
 noeol
