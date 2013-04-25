@@ -26,7 +26,7 @@ function! PreserveNoEOL#Executable#Preserve( isPostWrite )
     " output. This is because on Windows GVIM, the system() call does not
     " (briefly) open a Windows shell window, but ':silent !{cmd}' does. system()
     " also does not unintentionally trigger the 'autowrite' feature.
-    let l:shell_output = system(g:PreserveNoEOL_command . ' ' . escapings#shellescape(l:filespec))
+    let l:shell_output = system(g:PreserveNoEOL_Command . ' ' . escapings#shellescape(l:filespec))
 
     if v:shell_error != 0
 	let v:errmsg = "Failed to preserve 'noeol': " . (empty(l:shell_output) ? v:shell_error : l:shell_output)
