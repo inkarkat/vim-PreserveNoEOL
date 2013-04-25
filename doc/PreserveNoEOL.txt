@@ -31,6 +31,11 @@ handle these cases, so you can choose the one that fits you best.
 
 HOW IT WORKS								     *
 
+Except for the internal Vimscript implementation, all other strategies first
+let Vim save the file as usual (with a final <EOL>), and then post-process (on
+|BufWritePost|) the file contents, using file-system API functions to truncate
+the final <EOL>.
+
 RELATED WORKS								     *
 
 The pure Vimscript implementation is based on the following VimTip:
@@ -61,16 +66,21 @@ commands or the buffer-local flag |b:PreserveNoEOL|.
 INSTALLATION					  *PreserveNoEOL-installation*
 
 This script is packaged as a |vimball|. If you have the "gunzip" decompressor
-in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
 the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
 vimball or via the |:UseVimball| command. >
-    vim PreserveNoEOL.vba.gz
+    vim PreserveNoEOL*.vmb.gz
     :so %
+On Linux / Unix systems, you also have to make the "noeol" script executable: >
+    :! chmod +x ~/.vim/noeol
+<
 To uninstall, use the |:RmVimball| command.
 
 DEPENDENCIES					  *PreserveNoEOL-dependencies*
 
 - Requires Vim 7.0 or higher.
+- Vim with the Python (2.x) interface or the Perl interface (optional)
+- System Perl interpreter (optional)
 
 ==============================================================================
 CONFIGURATION					 *PreserveNoEOL-configuration*
@@ -80,6 +90,10 @@ For a permanent configuration, put the following commands into your |vimrc|:
 						    *g:PreserveNoEOL_Function*
 This plugin supports multiple strategies for keeping the <EOL> off of text
 files:
+When Vim is compiled with |+python| support, a Python function is used to
+strip off the trailing newline after writing the buffer. This even works with
+'readonly' files. >
+    let g:PreserveNoEOL_Function = function('PreserveNoEOL#Python#Preserve')
 When Vim is compiled with |+perl| support, a Perl function is used to strip
 off the trailing newline after writing the buffer. This even works with
 'readonly' files. >
@@ -91,7 +105,7 @@ support built into Vim. >
 As a fallback, a pure Vimscript implementation can be used. This temporarily
 sets the 'binary' option on each buffer write and messes with the line
 endings. >
-    let g:PreserveNoEOL_Command = function('PreserveNoEOL#Internal#Preserve')
+    let g:PreserveNoEOL_Function = function('PreserveNoEOL#Internal#Preserve')
 <
 						     *g:PreserveNoEOL_Command*
 The processing can be delegated to an external executable named "noeol". It is
@@ -121,14 +135,17 @@ IDEAS							 *PreserveNoEOL-ideas*
 ==============================================================================
 HISTORY						       *PreserveNoEOL-history*
 
-GOAL
+1.00	26-Apr-2013
 First published version.
 
 0.01	16-Nov-2011
 Started development.
 
 ==============================================================================
-Copyright: (C) 2011-2012 Ingo Karkat
+Copyright: (C) 2011-2013 Ingo Karkat and the authors of the Vim Tips Wiki page
+"Preserve missing end-of-line at end of text files", which is licensed under
+  Creative Commons Attribution-Share Alike License 3.0 (Unported) (CC-BY-SA)
+  http://creativecommons.org/licenses/by-sa/3.0/
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
