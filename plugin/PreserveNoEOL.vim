@@ -2,15 +2,16 @@
 "
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher.
-"   - PreserveNoEOL.vim autoload script.
-"   - Preserve implementation like PreserveNoEOL/Executable.vim autoload script.
+"   - PreserveNoEOL.vim autoload script
+"   - a Preserve implementation like the PreserveNoEOL/Executable.vim autoload script
 "
-" Copyright: (C) 2011-2012 Ingo Karkat
+" Copyright: (C) 2011-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	009	06-Jan-2013	Add (and prefer) embedded Python implementation.
 "	008	25-Mar-2012	Add :SetNoEOL command.
 "	007	23-Mar-2012	Add embedded Perl implementation and favor that
 "				one if Vim is built with Perl support, since it
@@ -68,9 +69,12 @@ if ! exists('g:PreserveNoEOL_Function')
 	runtime autoload/PreserveNoEOL/Executable.vim
 	runtime autoload/PreserveNoEOL/Internal.vim
 	runtime autoload/PreserveNoEOL/Perl.vim
+	runtime autoload/PreserveNoEOL/Python.vim
     endif
 
-    if has('perl')
+    if has('python')
+	let g:PreserveNoEOL_Function = function('PreserveNoEOL#Python#Preserve')
+    elseif has('perl')
 	let g:PreserveNoEOL_Function = function('PreserveNoEOL#Perl#Preserve')
     elseif empty(g:PreserveNoEOL_Command)
 	let g:PreserveNoEOL_Command = function('PreserveNoEOL#Internal#Preserve')
