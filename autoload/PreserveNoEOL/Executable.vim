@@ -2,14 +2,16 @@
 " executable.
 "
 " DEPENDENCIES:
+"   - PreserveNoEOL.vim autoload script
 "   - "noeol" helper executable.
 "
-" Copyright: (C) 2011-2012 Ingo Karkat
+" Copyright: (C) 2011-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.00.004	26-Apr-2013	Use PreserveNoEOL#PreserveErrorMsg().
 "	003	23-Mar-2012	Renamed from noeol.vim to Executable.vim.
 "	002	18-Nov-2011	Switched interface of Preserve() to pass
 "				pre-/post-write flag instead of filespec.
@@ -29,11 +31,7 @@ function! PreserveNoEOL#Executable#Preserve( isPostWrite )
     let l:shell_output = system(g:PreserveNoEOL_Command . ' ' . escapings#shellescape(l:filespec))
 
     if v:shell_error != 0
-	let v:errmsg = "Failed to preserve 'noeol': " . (empty(l:shell_output) ? v:shell_error : l:shell_output)
-	echohl ErrorMsg
-	echomsg v:errmsg
-	echohl None
-
+	call PreserveNoEOL#PreserveErrorMsg(empty(l:shell_output) ? v:shell_error : l:shell_output)
 	return 0
     endif
 
