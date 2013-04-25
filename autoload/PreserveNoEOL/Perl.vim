@@ -1,14 +1,16 @@
 " PreserveNoEOL/Perl.vim: Preserve EOL Perl implementation.
 "
 " DEPENDENCIES:
+"   - PreserveNoEOL.vim autoload script
 "   - Vim with built-in Perl support.
 "
-" Copyright: (C) 2012 Ingo Karkat
+" Copyright: (C) 2012-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.00.002	26-Apr-2013	Use PreserveNoEOL#PreserveErrorMsg().
 "	001	23-Mar-2012	file creation
 
 if ! has('perl')
@@ -87,11 +89,7 @@ function! PreserveNoEOL#Perl#Preserve( isPostWrite )
     let l:perl_errmsg = ''
     perl PreserveNoEOL::noeol
     if ! empty(l:perl_errmsg)
-	let v:errmsg = "Failed to preserve 'noeol': " . l:perl_errmsg
-	echohl ErrorMsg
-	echomsg v:errmsg
-	echohl None
-
+	call PreserveNoEOL#PreserveErrorMsg(l:perl_errmsg)
 	return 0
     endif
 
