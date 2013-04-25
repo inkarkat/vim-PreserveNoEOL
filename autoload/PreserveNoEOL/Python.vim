@@ -1,6 +1,7 @@
 " PreserveNoEOL/Python.vim: Preserve EOL Python implementation.
 "
 " DEPENDENCIES:
+"   - PreserveNoEOL.vim autoload script
 "   - Vim with built-in Python support.
 "
 " Source:
@@ -12,6 +13,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.00.003	26-Apr-2013	Use PreserveNoEOL#PreserveErrorMsg().
 "	002	06-Jan-2013	Complete implementation.
 "	001	05-Jan-2013	file creation
 
@@ -72,11 +74,7 @@ function! PreserveNoEOL#Python#Preserve( isPostWrite )
     let l:python_errmsg = ''
     python noeol()
     if ! empty(l:python_errmsg)
-	let v:errmsg = "Failed to preserve 'noeol': " . l:python_errmsg
-	echohl ErrorMsg
-	echomsg v:errmsg
-	echohl None
-
+	call PreserveNoEOL#PreserveErrorMsg(l:python_errmsg)
 	return 0
     endif
 
