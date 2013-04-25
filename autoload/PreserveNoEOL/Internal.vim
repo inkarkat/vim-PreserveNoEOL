@@ -1,10 +1,9 @@
-" PreserveNoEOL/Internal.vim: Internal Vimscript-only implementation of Preserve
-" EOL. 
+" PreserveNoEOL/Internal.vim: Internal pure Vimscript implementation of Preserve EOL.
 "
 " DEPENDENCIES:
 "
 " Copyright: (C) 2011 Ingo Karkat and the authors of the Vim Tips Wiki page
-" "Preserve missing end-of-line at end of text files". 
+" "Preserve missing end-of-line at end of text files".
 "   Creative Commons Attribution-Share Alike License 3.0 (Unported) (CC-BY-SA)
 "   http://creativecommons.org/licenses/by-sa/3.0/
 "
@@ -12,7 +11,7 @@
 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
-" REVISION	DATE		REMARKS 
+" REVISION	DATE		REMARKS
 "	001	18-Nov-2011	file creation
 
 " Preserve noeol (missing trailing eol) when saving file. In order
