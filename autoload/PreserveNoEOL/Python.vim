@@ -12,6 +12,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	002	06-Jan-2013	Complete implementation.
 "	001	05-Jan-2013	file creation
 
 if ! has('python')
@@ -20,40 +21,46 @@ endif
 
 if ! exists('s:isPythonInitialized')
     python << EOF
-import sys
+import os, stat, sys
 import vim
 
 def trunc(file, new_len):
-    try:
-	# open with mode "append" so we have permission to modify
-	# cannot open with mode "write" because that clobbers the file!
-	f = open(file, "ab")
-	f.truncate(new_len)
-	f.close()
-    except IOError:
-	vim.command("let python_errmsg = 'Cannot write to file'")
+    file_mode = os.stat(file)[0]
+    is_temp_writable = False
+    if (not file_mode & stat.S_IWRITE) and vim.eval("v:cmdbang") == "1":
+	# Unlike Vim with :write!, Python cannot open a read-only file for
+	# writing. Being invoked here means that Vim was able to
+	# successfully write the file itself, so we should be able to
+	# temporarily lift the read-only flag, too.
+	os.chmod(file, stat.S_IWRITE)
+	is_temp_writable = True
+
+    # Open with mode "append" so that we have permission to modify.
+    # Cannot open with mode "write" because that clobbers the file!
+    f = open(file, "ab")
+    f.truncate(new_len)
+    f.close()
+
+    if is_temp_writable:
+	os.chmod(file, file_mode)
 
 def noeol():
-    file = vim.eval('expand("<afile>")')
     try:
-	# must have mode "b" (binary) to allow f.seek() with negative offset
+	file = vim.eval('expand("<afile>")')
+
+	# Must have mode "binary" to allow f.seek() with negative offset.
 	f = open(file, "rb")
-
-	SEEK_EOF = 2
-	f.seek(-2, SEEK_EOF)  # seek to two bytes before end of file
-
+	f.seek(-2, os.SEEK_END)  # Seek to two bytes before EOF
 	end_pos = f.tell()
-	vim.command("let foo = 'opening " + file + " to " + end_pos + "'")
-
-	line = f.read()
+	last_line = f.read()
 	f.close()
 
-	if line.endswith("\r\n"):
+	if last_line.endswith("\r\n"):
 	    trunc(file, end_pos)
-	elif line.endswith("\n"):
+	elif last_line.endswith("\n"):
 	    trunc(file, end_pos + 1)
-    except IOError:
-	vim.command("let python_errmsg = 'File does not exist'")
+    except Exception as e:
+	vim.command("let python_errmsg = '%s'" % str(e).replace("'", "''"))
 EOF
     let s:isPythonInitialized = 1
 endif
@@ -63,7 +70,7 @@ function! PreserveNoEOL#Python#Preserve( isPostWrite )
     endif
 
     let l:python_errmsg = ''
-    python noeol
+    python noeol()
     if ! empty(l:python_errmsg)
 	let v:errmsg = "Failed to preserve 'noeol': " . l:python_errmsg
 	echohl ErrorMsg
