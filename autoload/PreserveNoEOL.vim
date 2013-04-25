@@ -8,6 +8,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	004	25-Mar-2012	Add :SetNoEOL command.
 "	003	23-Mar-2012	Rename b:preservenoeol to b:PreserveNoEOL.
 "	002	18-Nov-2011	Switched interface of Preserve() to pass
 "				pre-/post-write flag instead of filespec.
@@ -26,17 +27,23 @@ function! PreserveNoEOL#HandleNoEOL( isPostWrite )
     endif
 endfunction
 
-function! PreserveNoEOL#SetPreserve()
+function! PreserveNoEOL#SetPreserve( isSet )
     if &l:binary
 	let v:errmsg = 'This is a binary file'
 	echohl ErrorMsg
 	echomsg v:errmsg
 	echohl None
     elseif &l:eol
-	let v:errmsg = 'This file has a proper EOL ending'
-	echohl ErrorMsg
-	echomsg v:errmsg
-	echohl None
+	if a:isSet
+	    setlocal noeol
+	    let b:PreserveNoEOL = 1
+	    echomsg 'This file will be written without EOL'
+	else
+	    let v:errmsg = 'This file has a proper EOL ending'
+	    echohl ErrorMsg
+	    echomsg v:errmsg
+	    echohl None
+	endif
     else
 	let b:PreserveNoEOL = 1
 	echomsg 'Missing EOL will be preserved'
