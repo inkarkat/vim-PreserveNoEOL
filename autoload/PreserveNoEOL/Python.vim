@@ -1,7 +1,6 @@
 " PreserveNoEOL/Python.vim: Preserve EOL Python implementation.
 "
 " DEPENDENCIES:
-"   - PreserveNoEOL.vim autoload script
 "   - Vim with built-in Python support.
 "
 " Source:
@@ -13,7 +12,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"   1.00.003	26-Apr-2013	Use PreserveNoEOL#PreserveErrorMsg().
+"   1.00.003	26-Apr-2013	Return the potential error message;
+"				PreserveNoEOL#HandleNoEOL will print it.
 "	002	06-Jan-2013	Complete implementation.
 "	001	05-Jan-2013	file creation
 
@@ -68,15 +68,12 @@ EOF
 endif
 function! PreserveNoEOL#Python#Preserve( isPostWrite )
     if ! a:isPostWrite
-	return 1
+	return ''
     endif
 
     let l:python_errmsg = ''
     python noeol()
-    if ! empty(l:python_errmsg)
-	call PreserveNoEOL#PreserveErrorMsg(l:python_errmsg)
-	return 0
-    endif
+    return l:python_errmsg
 
     " Even though the file was changed outside of Vim, this doesn't seem to
     " trigger the |timestamp| "file changed" warning, probably because Vim
@@ -84,7 +81,6 @@ function! PreserveNoEOL#Python#Preserve( isPostWrite )
     " says Vim re-reads in to a hidden buffer, so it probably doesn't even see
     " the change.)
     " Therefore, no :checktime / temporary setting of 'autoread' is necessary.
-    return 1
 endfunction
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
