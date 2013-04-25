@@ -13,9 +13,9 @@
 
 function! PreserveNoEOL#Info#IsPreserve()
     if exists('b:PreserveNoEOL')
-	return (b:PreserveNoEOL != 0)
+	return !! b:PreserveNoEOL
     elseif exists('g:PreserveNoEOL')
-	return (g:PreserveNoEOL != 0)
+	return !! g:PreserveNoEOL
     else
 	return 0
     endif
