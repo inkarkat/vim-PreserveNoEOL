@@ -17,65 +17,65 @@ endif
 
 if ! exists('s:isPerlInitialized')
     perl << EOF
-    package PreserveNoEOL;
+package PreserveNoEOL;
 
-    # XXX: Use of autodie failed with "Can't call method "isa" on an undefined
-    # value at C:/ProgramData/Perl5.12/perl/lib/autodie/exception.pm line 672."
-    # instead of throwing an exception. Do explicit "or die()" checks instead.
+# XXX: Use of autodie failed with "Can't call method "isa" on an undefined
+# value at C:/ProgramData/Perl5.12/perl/lib/autodie/exception.pm line 672."
+# instead of throwing an exception. Do explicit "or die()" checks instead.
 
-    sub noeol
+sub noeol
+{
+    eval
     {
-	eval
-	{
-	    my $perms;
-	    my $file = VIM::Eval('expand("<afile>")');
+	my $perms;
+	my $file = VIM::Eval('expand("<afile>")');
 
-	    if (! -w $file && VIM::Eval('v:cmdbang') == 1) {
-		# Unlike Vim with :write!, Perl cannot open a read-only file for
-		# writing. Being invoked here means that Vim was able to
-		# successfully write the file itself, so we should be able to
-		# temporarily lift the read-only flag, too.
-		my $mode = (stat($file))[2] or die "Can't stat: $!";
-		$perms = sprintf('%04o', $mode & 07777);
-		chmod 0777, $file or die "Can't remove read-only flag: $!";
+	if (! -w $file && VIM::Eval('v:cmdbang') == 1) {
+	    # Unlike Vim with :write!, Perl cannot open a read-only file for
+	    # writing. Being invoked here means that Vim was able to
+	    # successfully write the file itself, so we should be able to
+	    # temporarily lift the read-only flag, too.
+	    my $mode = (stat($file))[2] or die "Can't stat: $!";
+	    $perms = sprintf('%04o', $mode & 07777);
+	    chmod 0777, $file or die "Can't remove read-only flag: $!";
+	}
+
+	open $fh, '+>>', $file or die "Can't open file: $!";
+	my $pos = tell $fh;
+	$pos > 0 or exit;
+	my $len = ($pos >= 2 ? 2 : 1);
+	sysseek $fh, $pos - $len, 0 or die "Can't seek to end: $!";
+	sysread $fh, $buf, $len or die 'No data to read?';
+
+	if ($buf eq "\r\n") {
+	    # print "truncate DOS-style CR-LF\n";
+	    truncate $fh, $pos - 2 or die "Can't truncate: $!";
+	} elsif(substr($buf, -1) eq "\n") {
+	    # print "truncate Unix-style LF\n";
+	    truncate $fh, $pos - 1 or die "Can't truncate: $!";
+	} elsif(substr($buf, -1) eq "\r") {
+	    # print "truncate Mac-style CR\n";
+	    truncate $fh, $pos - 1 or die "Can't truncate: $!";
+	}
+	close $fh or die "Can't close file: $!";
+
+	if ($perms != undef) {
+	    chmod $perms, $file or die "Can't restore read-only flag: $!";
+	    my $mode2 = (stat($file))[2] or die "Can't stat: $!";
+	    my $perms2 = sprintf('%04o', $mode2 & 07777);
+	    if ($perms2 ne $perms) {
+		# XXX: Somehow, on Strawberry Perl 5.12.3 on Windows Vista
+		# and Vim 7.3/x86, the permissions won't change back, even
+		# outside Vim. But somehow this can be worked around by
+		# invoking another :perl?!
+		#VIM::DoCommand("echomsg 'I need the read-only fix'");
+		VIM::DoCommand("perl chmod $perms, '$file' or die \"Can't restore read-only flag: \$!\"");
 	    }
-
-	    open $fh, '+>>', $file or die "Can't open file: $!";
-	    my $pos = tell $fh;
-	    $pos > 0 or exit;
-	    my $len = ($pos >= 2 ? 2 : 1);
-	    sysseek $fh, $pos - $len, 0 or die "Can't seek to end: $!";
-	    sysread $fh, $buf, $len or die 'No data to read?';
-
-	    if ($buf eq "\r\n") {
-		# print "truncate DOS-style CR-LF\n";
-		truncate $fh, $pos - 2 or die "Can't truncate: $!";
-	    } elsif(substr($buf, -1) eq "\n") {
-		# print "truncate Unix-style LF\n";
-		truncate $fh, $pos - 1 or die "Can't truncate: $!";
-	    } elsif(substr($buf, -1) eq "\r") {
-		# print "truncate Mac-style CR\n";
-		truncate $fh, $pos - 1 or die "Can't truncate: $!";
-	    }
-	    close $fh or die "Can't close file: $!";
-
-	    if ($perms != undef) {
-		chmod $perms, $file or die "Can't restore read-only flag: $!";
-		my $mode2 = (stat($file))[2] or die "Can't stat: $!";
-		my $perms2 = sprintf('%04o', $mode2 & 07777);
-		if ($perms2 ne $perms) {
-		    # XXX: Somehow, on Strawberry Perl 5.12.3 on Windows Vista
-		    # and Vim 7.3/x86, the permissions won't change back, even
-		    # outside Vim. But somehow this can be worked around by
-		    # invoking another :perl?!
-		    #VIM::DoCommand("echomsg 'I need the read-only fix'");
-		    VIM::DoCommand("perl chmod $perms, '$file' or die \"Can't restore read-only flag: \$!\"");
-		}
-	    }
-	};
-	$@ =~ s/'/''/g;
-	VIM::DoCommand("let perl_errmsg = '$@'");
-    }
+	}
+    };
+    $@ =~ s/'/''/g;
+    VIM::DoCommand("let perl_errmsg = '$@'");
+}
 EOF
     let s:isPerlInitialized = 1
 endif
