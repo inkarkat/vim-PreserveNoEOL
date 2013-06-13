@@ -2,8 +2,8 @@
 "
 " DEPENDENCIES:
 "
-" Copyright: (C) 2011 Ingo Karkat and the authors of the Vim Tips Wiki page
-" "Preserve missing end-of-line at end of text files".
+" Copyright: (C) 2011-2013 Ingo Karkat and the authors of the Vim Tips Wiki page
+" "Preserve missing end-of-line at end of text files", which is licensed under
 "   Creative Commons Attribution-Share Alike License 3.0 (Unported) (CC-BY-SA)
 "   http://creativecommons.org/licenses/by-sa/3.0/
 "
@@ -12,6 +12,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+" 1.00.002	26-Apr-2013	Handle any Vim exception that may arise, and
+"				return it; PreserveNoEOL#HandleNoEOL will print
+"				it.
 "	001	18-Nov-2011	file creation
 
 " Preserve noeol (missing trailing eol) when saving file. In order
@@ -64,11 +67,18 @@ fun! s:TempRestoreBinaryForNoeol()
 endfun
 
 function! PreserveNoEOL#Internal#Preserve( isPostWrite )
-  if a:isPostWrite
-    call s:TempRestoreBinaryForNoeol()
-  else
-    call s:TempSetBinaryForNoeol()
-  endif
+  try
+    if a:isPostWrite
+      call s:TempRestoreBinaryForNoeol()
+    else
+      call s:TempSetBinaryForNoeol()
+    endif
+    return ''
+  catch /^Vim\%((\a\+)\)\=:E/
+    " v:exception contains what is normally in v:errmsg, but with extra
+    " exception source info prepended, which we cut away.
+    return substitute(v:exception, '^Vim\%((\a\+)\)\=:', '', '')
+  endtry
 endfunction
 
 " vim: set ts=8 sts=2 sw=2 expandtab ff=unix fdm=syntax :
