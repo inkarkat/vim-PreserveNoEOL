@@ -1,3 +1,4 @@
+autoload/escapings.vim
 autoload/PreserveNoEOL.vim
 autoload/PreserveNoEOL/Executable.vim
 autoload/PreserveNoEOL/Info.vim
@@ -5,4 +6,5 @@ autoload/PreserveNoEOL/Internal.vim
 autoload/PreserveNoEOL/Perl.vim
 autoload/PreserveNoEOL/Python.vim
 plugin/PreserveNoEOL.vim
+doc/PreserveNoEOL.txt
 noeol
