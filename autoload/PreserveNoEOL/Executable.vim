@@ -11,7 +11,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"   1.00.004	26-Apr-2013	Use PreserveNoEOL#PreserveErrorMsg().
+"   1.00.004	26-Apr-2013	Return the potential error message;
+"				PreserveNoEOL#HandleNoEOL will print it.
 "	003	23-Mar-2012	Renamed from noeol.vim to Executable.vim.
 "	002	18-Nov-2011	Switched interface of Preserve() to pass
 "				pre-/post-write flag instead of filespec.
@@ -19,7 +20,7 @@
 
 function! PreserveNoEOL#Executable#Preserve( isPostWrite )
     if ! a:isPostWrite
-	return 1
+	return ''
     endif
 
     let l:filespec = expand('<afile>')
@@ -31,8 +32,7 @@ function! PreserveNoEOL#Executable#Preserve( isPostWrite )
     let l:shell_output = system(g:PreserveNoEOL_Command . ' ' . escapings#shellescape(l:filespec))
 
     if v:shell_error != 0
-	call PreserveNoEOL#PreserveErrorMsg(empty(l:shell_output) ? v:shell_error : l:shell_output)
-	return 0
+	return (empty(l:shell_output) ? v:shell_error : l:shell_output)
     endif
 
     " Even though the file was changed outside of Vim, this doesn't seem to
@@ -41,7 +41,7 @@ function! PreserveNoEOL#Executable#Preserve( isPostWrite )
     " says Vim re-reads in to a hidden buffer, so it probably doesn't even see
     " the change.)
     " Therefore, no :checktime / temporary setting of 'autoread' is necessary.
-    return 1
+    return ''
 endfunction
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
