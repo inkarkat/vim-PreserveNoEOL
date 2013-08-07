@@ -3,6 +3,7 @@
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher.
 "   - PreserveNoEOL.vim autoload script
+"   - escapings.vim autoload script
 "   - a Preserve implementation like the PreserveNoEOL/Executable.vim autoload script
 "
 " Copyright: (C) 2011-2013 Ingo Karkat
@@ -11,7 +12,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"	009	06-Jan-2013	Add (and prefer) embedded Python implementation.
+"   1.00.009	06-Jan-2013	Add (and prefer) embedded Python implementation.
 "	008	25-Mar-2012	Add :SetNoEOL command.
 "	007	23-Mar-2012	Add embedded Perl implementation and favor that
 "				one if Vim is built with Perl support, since it
