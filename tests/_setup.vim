@@ -18,7 +18,7 @@ function! AssertSameFileSize( inputFile )
     endif
 
     " Test execution.
-    execute 'edit' fnameescape(s:targetFilespec)
+    execute 'edit ++ff=' . fnamemodify(a:inputFile, ':t:r') fnameescape(s:targetFilespec)
     1substitute/.$/!/
     write
 
