@@ -12,6 +12,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+" 1.02.003	14-Jun-2013	Minor: Make substitute() robust against
+"				'ignorecase'.
 " 1.00.002	26-Apr-2013	Handle any Vim exception that may arise, and
 "				return it; PreserveNoEOL#HandleNoEOL will print
 "				it.
@@ -77,7 +79,7 @@ function! PreserveNoEOL#Internal#Preserve( isPostWrite )
   catch /^Vim\%((\a\+)\)\=:E/
     " v:exception contains what is normally in v:errmsg, but with extra
     " exception source info prepended, which we cut away.
-    return substitute(v:exception, '^Vim\%((\a\+)\)\=:', '', '')
+    return substitute(v:exception, '^\CVim\%((\a\+)\)\=:', '', '')
   endtry
 endfunction
 
