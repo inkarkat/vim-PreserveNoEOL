@@ -8,9 +8,11 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"   1.00.005	26-Apr-2013	Factor out s:ErrorMsg() and offer
-"				PreserveNoEOL#PreserveErrorMsg() for the
-"				strategies' preserve errors.
+"   1.00.005	26-Apr-2013	Factor out s:ErrorMsg().
+"				Receive possible error message from
+"				g:PreserveNoEOL_Function and print it here
+"				centrally, instead of having all strategies do
+"				that on their own.
 "	004	25-Mar-2012	Add :SetNoEOL command.
 "	003	23-Mar-2012	Rename b:preservenoeol to b:PreserveNoEOL.
 "	002	18-Nov-2011	Switched interface of Preserve() to pass
@@ -23,14 +25,14 @@ function! s:ErrorMsg( text )
     echomsg v:errmsg
     echohl None
 endfunction
-function! PreserveNoEOL#PreserveErrorMsg( details )
-    call s:ErrorMsg("Failed to preserve 'noeol': " . a:details)
-endfunction
 
 function! PreserveNoEOL#HandleNoEOL( isPostWrite )
     if PreserveNoEOL#Info#IsPreserve()
 	" The user has chosen to preserve the missing EOL in the last line.
-	call call(g:PreserveNoEOL_Function, [a:isPostWrite])
+	let l:errmsg = call(g:PreserveNoEOL_Function, [a:isPostWrite])
+	if ! empty(l:errmsg)
+	    call s:ErrorMsg("Failed to preserve 'noeol': " . l:errmsg)
+	endif
     elseif a:isPostWrite
 	" The buffer write has appended the missing EOL in the last line. Vim
 	" does not reset 'noeol', but I prefer to have it reflect the actual
