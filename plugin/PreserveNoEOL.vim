@@ -4,6 +4,7 @@
 "   - Requires Vim 7.0 or higher.
 "   - PreserveNoEOL.vim autoload script
 "   - ingo/compat.vim autoload script
+"   - ingo/os.vim autoload script
 "   - a Preserve implementation like the PreserveNoEOL/Executable.vim autoload script
 "
 " Copyright: (C) 2011-2013 Ingo Karkat
@@ -12,6 +13,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.02.011	13-Sep-2013	Use operating system detection functions from
+"				ingo/os.vim.
 "   1.02.010	08-Aug-2013	Move escapings.vim into ingo-library.
 "   1.00.009	06-Jan-2013	Add (and prefer) embedded Python implementation.
 "	008	25-Mar-2012	Add :SetNoEOL command.
@@ -51,7 +54,7 @@ function! s:DefaultCommand()
 
     let l:command = ingo#compat#shellescape(l:noeolCommandFilespec)
 
-    if has('win32') || has('win64')
+    if ingo#os#IsWinOrDos()
 	" Only Unix shells can directly execute the Perl script through the
 	" shebang line; Windows needs an explicit invocation through the Perl
 	" interpreter.
