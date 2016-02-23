@@ -1,13 +1,15 @@
 " PreserveNoEOL.vim: Preserve missing EOL at the end of text files.
 "
 " DEPENDENCIES:
+"   - ingo/msg.vim autoload script
 "
-" Copyright: (C) 2011-2013 Ingo Karkat
+" Copyright: (C) 2011-2014 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.02.006	05-May-2014	Use ingo#msg#ErrorMsg().
 "   1.00.005	26-Apr-2013	Factor out s:ErrorMsg().
 "				Receive possible error message from
 "				g:PreserveNoEOL_Function and print it here
@@ -19,19 +21,12 @@
 "				pre-/post-write flag instead of filespec.
 "	001	18-Nov-2011	file creation
 
-function! s:ErrorMsg( text )
-    let v:errmsg = a:text
-    echohl ErrorMsg
-    echomsg v:errmsg
-    echohl None
-endfunction
-
 function! PreserveNoEOL#HandleNoEOL( isPostWrite )
     if PreserveNoEOL#Info#IsPreserve()
 	" The user has chosen to preserve the missing EOL in the last line.
 	let l:errmsg = call(g:PreserveNoEOL_Function, [a:isPostWrite])
 	if ! empty(l:errmsg)
-	    call s:ErrorMsg("Failed to preserve 'noeol': " . l:errmsg)
+	    call ingo#msg#ErrorMsg("Failed to preserve 'noeol': " . l:errmsg)
 	endif
     elseif a:isPostWrite
 	" The buffer write has appended the missing EOL in the last line. Vim
@@ -44,14 +39,14 @@ endfunction
 
 function! PreserveNoEOL#SetPreserve( isSet )
     if &l:binary
-	call s:ErrorMsg('This is a binary file')
+	call ingo#msg#ErrorMsg('This is a binary file')
     elseif &l:eol
 	if a:isSet
 	    setlocal noeol
 	    let b:PreserveNoEOL = 1
 	    echomsg 'This file will be written without EOL'
 	else
-	    call s:ErrorMsg('This file has a proper EOL ending')
+	    call ingo#msg#ErrorMsg('This file has a proper EOL ending')
 	endif
     else
 	let b:PreserveNoEOL = 1
