@@ -1,7 +1,7 @@
 let g:PreserveNoEOL = 1
 runtime plugin/PreserveNoEOL.vim
 
-let s:copyCommand = (has('win32') || has('win64') ? 'copy /B /Y' : 'cp -f')
+let s:copyCommand = (ingo#os#IsWinOrDos() ? 'copy /B /Y' : 'cp -f')
 let s:targetFilespec = 'test.txt'
 function! AssertSameFileSize( inputFile )
     let l:originalSize = getfsize(a:inputFile)
