@@ -2,6 +2,7 @@
 " executable.
 "
 " DEPENDENCIES:
+"   - ingo/compat.vim autoload script
 "   - PreserveNoEOL.vim autoload script
 "   - "noeol" helper executable.
 "
@@ -11,7 +12,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"   1.00.004	26-Apr-2013	Return the potential error message;
+"   1.02.004	26-Apr-2013	Return the potential error message;
 "				PreserveNoEOL#HandleNoEOL will print it.
 "	003	23-Mar-2012	Renamed from noeol.vim to Executable.vim.
 "	002	18-Nov-2011	Switched interface of Preserve() to pass
@@ -29,7 +30,7 @@ function! PreserveNoEOL#Executable#Preserve( isPostWrite )
     " output. This is because on Windows GVIM, the system() call does not
     " (briefly) open a Windows shell window, but ':silent !{cmd}' does. system()
     " also does not unintentionally trigger the 'autowrite' feature.
-    let l:shell_output = system(g:PreserveNoEOL_Command . ' ' . escapings#shellescape(l:filespec))
+    let l:shell_output = system(g:PreserveNoEOL_Command . ' ' . ingo#compat#shellescape(l:filespec))
 
     if v:shell_error != 0
 	return (empty(l:shell_output) ? v:shell_error : l:shell_output)
