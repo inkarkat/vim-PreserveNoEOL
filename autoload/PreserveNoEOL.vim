@@ -3,7 +3,7 @@
 " DEPENDENCIES:
 "   - ingo/msg.vim autoload script
 "
-" Copyright: (C) 2011-2014 Ingo Karkat
+" Copyright: (C) 2011-2016 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -46,7 +46,7 @@ function! PreserveNoEOL#SetPreserve( isSet )
 	    let b:PreserveNoEOL = 1
 	    echomsg 'This file will be written without EOL'
 	else
-	    call ingo#msg#ErrorMsg('This file has a proper EOL ending')
+	    call ingo#msg#ErrorMsg('This file has a proper EOL ending; use :SetNoEOL to drop it.')
 	endif
     else
 	let b:PreserveNoEOL = 1
