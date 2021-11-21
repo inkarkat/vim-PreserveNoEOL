@@ -7,12 +7,13 @@
 "   - ingo/os.vim autoload script
 "   - a Preserve implementation like the PreserveNoEOL/Executable.vim autoload script
 "
-" Copyright: (C) 2011-2013 Ingo Karkat
+" Copyright: (C) 2011-2014 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.02.012	22-Sep-2014	Use ingo#compat#globpath().
 "   1.02.011	13-Sep-2013	Use operating system detection functions from
 "				ingo/os.vim.
 "   1.02.010	08-Aug-2013	Move escapings.vim into ingo-library.
@@ -47,7 +48,7 @@ let g:loaded_PreserveNoEOL = 1
 "- configuration ---------------------------------------------------------------
 
 function! s:DefaultCommand()
-    let l:noeolCommandFilespec = get(split(globpath(&runtimepath, 'noeol'), "\n"), 0, '')
+    let l:noeolCommandFilespec = get(ingo#compat#globpath(&runtimepath, 'noeol', 0, 1), 0, '')
 
     " Fall back to (hopefully) locating this somewhere on $PATH.
     let l:noeolCommandFilespec = (empty(l:noeolCommandFilespec) ? 'noeol' : l:noeolCommandFilespec)
