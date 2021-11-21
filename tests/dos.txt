@@ -1,0 +1,3 @@
+Test file.
+In Windows CR-LF format.
+Without EOL
