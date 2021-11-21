@@ -1,4 +1,18 @@
 #!/usr/bin/env perl
+###############################################################################
+##
+# FILE:		noeol
+# PRODUCT:	PreserveNoEOL.vim plugin
+# AUTHOR:	Ingo Karkat <ingo@karkat.de>
+# DATE CREATED:	16-Nov-2011
+#
+###############################################################################
+#
+# COPYRIGHT: (C) 2011-2013 Ingo Karkat
+#   The VIM LICENSE applies to this script; see 'vim -c "help copyright"'.
+#
+# @(#)noeol	1.00.001	(26-Apr-2013)	tools
+###############################################################################
 use autodie qw(open sysseek sysread truncate);
 
 my $file = shift;
