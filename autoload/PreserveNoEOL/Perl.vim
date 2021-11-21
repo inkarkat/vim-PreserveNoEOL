@@ -1,7 +1,6 @@
 " PreserveNoEOL/Perl.vim: Preserve EOL Perl implementation.
 "
 " DEPENDENCIES:
-"   - PreserveNoEOL.vim autoload script
 "   - Vim with built-in Perl support.
 "
 " Copyright: (C) 2012-2013 Ingo Karkat
@@ -10,7 +9,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"   1.00.002	26-Apr-2013	Use PreserveNoEOL#PreserveErrorMsg().
+"   1.00.002	26-Apr-2013	Return the potential error message;
+"				PreserveNoEOL#HandleNoEOL will print it.
 "	001	23-Mar-2012	file creation
 
 if ! has('perl')
@@ -83,15 +83,12 @@ EOF
 endif
 function! PreserveNoEOL#Perl#Preserve( isPostWrite )
     if ! a:isPostWrite
-	return 1
+	return ''
     endif
 
     let l:perl_errmsg = ''
     perl PreserveNoEOL::noeol
-    if ! empty(l:perl_errmsg)
-	call PreserveNoEOL#PreserveErrorMsg(l:perl_errmsg)
-	return 0
-    endif
+    return l:perl_errmsg
 
     " Even though the file was changed outside of Vim, this doesn't seem to
     " trigger the |timestamp| "file changed" warning, probably because Vim
@@ -99,7 +96,6 @@ function! PreserveNoEOL#Perl#Preserve( isPostWrite )
     " says Vim re-reads in to a hidden buffer, so it probably doesn't even see
     " the change.)
     " Therefore, no :checktime / temporary setting of 'autoread' is necessary.
-    return 1
 endfunction
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
