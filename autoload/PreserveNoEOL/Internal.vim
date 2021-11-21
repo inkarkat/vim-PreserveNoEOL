@@ -2,7 +2,7 @@
 "
 " DEPENDENCIES:
 "
-" Copyright: (C) 2011-2013 Ingo Karkat and the authors of the Vim Tips Wiki page
+" Copyright: (C) 2011-2014 Ingo Karkat and the authors of the Vim Tips Wiki page
 " "Preserve missing end-of-line at end of text files", which is licensed under
 "   Creative Commons Attribution-Share Alike License 3.0 (Unported) (CC-BY-SA)
 "   http://creativecommons.org/licenses/by-sa/3.0/
@@ -76,7 +76,7 @@ function! PreserveNoEOL#Internal#Preserve( isPostWrite )
       call s:TempSetBinaryForNoeol()
     endif
     return ''
-  catch /^Vim\%((\a\+)\)\=:E/
+  catch /^Vim\%((\a\+)\)\=:/
     " v:exception contains what is normally in v:errmsg, but with extra
     " exception source info prepended, which we cut away.
     return substitute(v:exception, '^\CVim\%((\a\+)\)\=:', '', '')
