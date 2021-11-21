@@ -79,7 +79,7 @@ To uninstall, use the |:RmVimball| command.
 DEPENDENCIES					  *PreserveNoEOL-dependencies*
 
 - Requires Vim 7.0 or higher.
-- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.013 or
+- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.022 or
   higher.
 - Vim with the Python (2.x) interface or the Perl interface (optional)
 - System Perl interpreter (optional)
@@ -155,7 +155,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2011-2013 Ingo Karkat and the authors of the Vim Tips Wiki page
+Copyright: (C) 2011-2014 Ingo Karkat and the authors of the Vim Tips Wiki page
 "Preserve missing end-of-line at end of text files", which is licensed under
   Creative Commons Attribution-Share Alike License 3.0 (Unported) (CC-BY-SA)
   http://creativecommons.org/licenses/by-sa/3.0/
