@@ -1,0 +1,3 @@
+Test file.
+In Unix LF format.
+Without EOL
