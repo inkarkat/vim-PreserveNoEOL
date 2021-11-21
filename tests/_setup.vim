@@ -1,3 +1,5 @@
+call vimtest#AddDependency('vim-ingo-library')
+
 let g:PreserveNoEOL = 1
 runtime plugin/PreserveNoEOL.vim
 
