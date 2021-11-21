@@ -8,7 +8,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"	002	23-Mar-2012	Rename preservenoeol flag to PreserveNoEOL.
+"   1.00.002	23-Mar-2012	Rename preservenoeol flag to PreserveNoEOL.
 "	001	18-Nov-2011	file creation
 
 function! PreserveNoEOL#Info#IsPreserve()
