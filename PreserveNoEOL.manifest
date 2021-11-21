@@ -1,4 +1,3 @@
-autoload/escapings.vim
 autoload/PreserveNoEOL.vim
 autoload/PreserveNoEOL/Executable.vim
 autoload/PreserveNoEOL/Info.vim
